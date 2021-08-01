@@ -21,10 +21,10 @@ provider "discord-interactions" {}
 
 ### Required
 
-- **application_id** (String) Discord Application ID from https://discord.com/developers
+- **application_id** (String) Discord Application ID from https://discord.com/developers. Defaults to environment variable `DISCORD_APPLICATION_ID`
 
 ### Optional
 
-- **api_root** (String) Discord API root. Only useful for testing or version swaps, don't use this otherwise.
-- **bot_token** (String, Sensitive) Discord bot token from https://discord.com/developers
-- **client_credentials_token** (String, Sensitive) Discord client credentials token. (must have applications.commands.update scope)
+- **api_root** (String) **Testing only:** Change Discord API base path. Only useful for testing, don't use this in production.
+- **bot_token** (String, Sensitive) Discord bot token from https://discord.com/developers. Defaults to environment variable `DISCORD_BOT_TOKEN`
+- **client_credentials_token** (String, Sensitive) Discord client credentials token. (must have applications.commands.update scope). Defaults to environment variable `DISCORD_CLIENT_TOKEN`

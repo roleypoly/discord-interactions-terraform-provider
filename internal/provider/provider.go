@@ -23,7 +23,7 @@ func New(version string) func() *schema.Provider {
 			Schema: map[string]*schema.Schema{
 				"application_id": {
 					Type:         schema.TypeString,
-					Description:  "Discord Application ID from https://discord.com/developers",
+					Description:  "Discord Application ID from https://discord.com/developers. Defaults to environment variable `DISCORD_APPLICATION_ID`",
 					Required:     true,
 					DefaultFunc:  schema.EnvDefaultFunc("DISCORD_APPLICATION_ID", nil),
 					ValidateFunc: transforms.ValidateSnowflake,
@@ -33,7 +33,7 @@ func New(version string) func() *schema.Provider {
 					Sensitive:    true,
 					Optional:     true,
 					ExactlyOneOf: []string{"client_credentials_token", "bot_token"},
-					Description:  "Discord bot token from https://discord.com/developers",
+					Description:  "Discord bot token from https://discord.com/developers. Defaults to environment variable `DISCORD_BOT_TOKEN`",
 					DefaultFunc:  schema.EnvDefaultFunc("DISCORD_BOT_TOKEN", nil),
 				},
 				"client_credentials_token": {
@@ -41,13 +41,13 @@ func New(version string) func() *schema.Provider {
 					Sensitive:    true,
 					Optional:     true,
 					ExactlyOneOf: []string{"client_credentials_token", "bot_token"},
-					Description:  "Discord client credentials token. (must have applications.commands.update scope)",
+					Description:  "Discord client credentials token. (must have applications.commands.update scope). Defaults to environment variable `DISCORD_CLIENT_TOKEN`",
 					DefaultFunc:  schema.EnvDefaultFunc("DISCORD_CLIENT_TOKEN", nil),
 				},
 				"api_root": {
 					Type:        schema.TypeString,
 					Optional:    true,
-					Description: "Discord API root. Only useful for testing or version swaps, don't use this otherwise.",
+					Description: "**Testing only:** Change Discord API base path. Only useful for testing, don't use this in production.",
 					DefaultFunc: schema.EnvDefaultFunc("DISCORD_API_ROOT", "https://discord.com/api/v9"),
 					ValidateFunc: func(val interface{}, key string) (warns []string, errs []error) {
 						value := val.(string)
