@@ -3,7 +3,7 @@ package transforms_test
 import (
 	"testing"
 
-	"github.com/roleypoly/discord-interactions-terraform-provider/internal/transforms"
+	"github.com/roleypoly/terraform-provider-discord-interactions/internal/transforms"
 )
 
 func TestNameValidator(t *testing.T) {

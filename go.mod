@@ -1,4 +1,4 @@
-module github.com/roleypoly/discord-interactions-terraform-provider
+module github.com/roleypoly/terraform-provider-discord-interactions
 
 go 1.16
 

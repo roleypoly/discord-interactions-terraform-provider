@@ -58,7 +58,7 @@ func NewInteractionsClient(config ClientConfig) (*InteractionsClient, error) {
 	}
 
 	if config.UserAgent == "" {
-		config.UserAgent = "(+https://github.com/roleypoly/discord-interactions-terraform-provider)"
+		config.UserAgent = "(+https://github.com/roleypoly/terraform-provider-discord-interactions)"
 	}
 
 	return &InteractionsClient{

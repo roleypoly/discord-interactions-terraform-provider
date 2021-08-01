@@ -7,8 +7,8 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
-	"github.com/roleypoly/discord-interactions-terraform-provider/internal/client"
-	"github.com/roleypoly/discord-interactions-terraform-provider/internal/transforms"
+	"github.com/roleypoly/terraform-provider-discord-interactions/internal/client"
+	"github.com/roleypoly/terraform-provider-discord-interactions/internal/transforms"
 )
 
 func New(version string) func() *schema.Provider {
@@ -74,7 +74,7 @@ func New(version string) func() *schema.Provider {
 
 func configureProvider(version string, provider *schema.Provider) func(context.Context, *schema.ResourceData) (interface{}, diag.Diagnostics) {
 	return func(ctx context.Context, d *schema.ResourceData) (interface{}, diag.Diagnostics) {
-		userAgent := provider.UserAgent("discord-interactions-terraform-provider", version)
+		userAgent := provider.UserAgent("terraform-provider-discord-interactions", version)
 
 		var diags diag.Diagnostics
 

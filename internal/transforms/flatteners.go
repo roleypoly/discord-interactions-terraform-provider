@@ -1,7 +1,7 @@
 package transforms
 
 import (
-	"github.com/roleypoly/discord-interactions-terraform-provider/internal/client"
+	"github.com/roleypoly/terraform-provider-discord-interactions/internal/client"
 )
 
 func FlattenCommand(command *client.InteractionCommand) map[string]interface{} {

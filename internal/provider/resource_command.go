@@ -3,8 +3,8 @@ package provider
 import (
 	"context"
 
-	"github.com/roleypoly/discord-interactions-terraform-provider/internal/client"
-	"github.com/roleypoly/discord-interactions-terraform-provider/internal/transforms"
+	"github.com/roleypoly/terraform-provider-discord-interactions/internal/client"
+	"github.com/roleypoly/terraform-provider-discord-interactions/internal/transforms"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"

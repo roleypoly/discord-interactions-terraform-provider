@@ -1,6 +1,6 @@
 package transforms
 
-import "github.com/roleypoly/discord-interactions-terraform-provider/internal/client"
+import "github.com/roleypoly/terraform-provider-discord-interactions/internal/client"
 
 func ExpandOptions(optionItems []interface{}) []client.InteractionCommandOption {
 	options := make([]client.InteractionCommandOption, len(optionItems))
