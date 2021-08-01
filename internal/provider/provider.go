@@ -2,56 +2,99 @@ package provider
 
 import (
 	"context"
+	"fmt"
+	"strings"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"github.com/roleypoly/discord-interactions-terraform-provider/internal/client"
+	"github.com/roleypoly/discord-interactions-terraform-provider/internal/transforms"
 )
-
-func init() {
-	// Set descriptions to support markdown syntax, this will be used in document generation
-	// and the language server.
-	schema.DescriptionKind = schema.StringMarkdown
-
-	// Customize the content of descriptions when output. For example you can add defaults on
-	// to the exported descriptions if present.
-	// schema.SchemaDescriptionBuilder = func(s *schema.Schema) string {
-	// 	desc := s.Description
-	// 	if s.Default != nil {
-	// 		desc += fmt.Sprintf(" Defaults to `%v`.", s.Default)
-	// 	}
-	// 	return strings.TrimSpace(desc)
-	// }
-}
 
 func New(version string) func() *schema.Provider {
 	return func() *schema.Provider {
 		p := &schema.Provider{
-			DataSourcesMap: map[string]*schema.Resource{
-				"scaffolding_data_source": dataSourceScaffolding(),
-			},
 			ResourcesMap: map[string]*schema.Resource{
-				"scaffolding_resource": resourceScaffolding(),
+				"discord-interactions_global_command": resourceGlobalCommand(),
+				"discord-interactions_guild_command":  resourceGuildCommand(),
+				// TODO: add permissions
+			},
+			DataSourcesMap: map[string]*schema.Resource{},
+			Schema: map[string]*schema.Schema{
+				"application_id": {
+					Type:         schema.TypeString,
+					Description:  "Discord Application ID from https://discord.com/developers",
+					Required:     true,
+					DefaultFunc:  schema.EnvDefaultFunc("DISCORD_APPLICATION_ID", nil),
+					ValidateFunc: transforms.ValidateSnowflake,
+				},
+				"bot_token": {
+					Type:         schema.TypeString,
+					Sensitive:    true,
+					Optional:     true,
+					ExactlyOneOf: []string{"client_credentials_token", "bot_token"},
+					Description:  "Discord bot token from https://discord.com/developers",
+					DefaultFunc:  schema.EnvDefaultFunc("DISCORD_BOT_TOKEN", nil),
+				},
+				"client_credentials_token": {
+					Type:         schema.TypeString,
+					Sensitive:    true,
+					Optional:     true,
+					ExactlyOneOf: []string{"client_credentials_token", "bot_token"},
+					Description:  "Discord client credentials token. (must have applications.commands.update scope)",
+					DefaultFunc:  schema.EnvDefaultFunc("DISCORD_CLIENT_TOKEN", nil),
+				},
+				"api_root": {
+					Type:        schema.TypeString,
+					Optional:    true,
+					Description: "Discord API root. Only useful for testing or version swaps, don't use this otherwise.",
+					DefaultFunc: schema.EnvDefaultFunc("DISCORD_API_ROOT", "https://discord.com/api/v9"),
+					ValidateFunc: func(val interface{}, key string) (warns []string, errs []error) {
+						value := val.(string)
+
+						if strings.HasSuffix(value, "/") {
+							errs = append(errs, fmt.Errorf("api_root cannot end in /, got: `%s`", value))
+						}
+
+						if value != "https://discord.com/api/v9" {
+							warns = append(warns, "api_root is not default, this is extremely unsupported behavior")
+						}
+
+						return
+					},
+				},
 			},
 		}
 
-		p.ConfigureContextFunc = configure(version, p)
+		p.ConfigureContextFunc = configureProvider(version, p)
 
 		return p
 	}
 }
 
-type apiClient struct {
-	// Add whatever fields, client or connection info, etc. here
-	// you would need to setup to communicate with the upstream
-	// API.
-}
+func configureProvider(version string, provider *schema.Provider) func(context.Context, *schema.ResourceData) (interface{}, diag.Diagnostics) {
+	return func(ctx context.Context, d *schema.ResourceData) (interface{}, diag.Diagnostics) {
+		userAgent := provider.UserAgent("discord-interactions-terraform-provider", version)
 
-func configure(version string, p *schema.Provider) func(context.Context, *schema.ResourceData) (interface{}, diag.Diagnostics) {
-	return func(context.Context, *schema.ResourceData) (interface{}, diag.Diagnostics) {
-		// Setup a User-Agent for your API client (replace the provider name for yours):
-		// userAgent := p.UserAgent("terraform-provider-scaffolding", version)
-		// TODO: myClient.UserAgent = userAgent
+		var diags diag.Diagnostics
 
-		return &apiClient{}, nil
+		applicationID := d.Get("application_id").(string)
+		botToken := d.Get("bot_token").(string)
+		clientCredentials := d.Get("client_credentials_token").(string)
+		apiRoot := d.Get("api_root").(string)
+
+		client, err := client.NewInteractionsClient(client.ClientConfig{
+			ApplicationID:     applicationID,
+			BotToken:          botToken,
+			ClientCredentials: clientCredentials,
+			APIRoot:           apiRoot,
+			UserAgent:         userAgent,
+		})
+
+		if err != nil {
+			return nil, diag.FromErr(err)
+		}
+
+		return client, diags
 	}
 }
