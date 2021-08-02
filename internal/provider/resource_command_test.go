@@ -37,7 +37,7 @@ func init() {
 
 func TestAccDiscordInteractionsGuildCommand_basic(t *testing.T) {
 	path := "discord-interactions_guild_command.hello-world"
-	name := "test-acc-hello-world"
+	name := "test-acc-" + getName()
 	description := "A test command for terraform acceptance tests"
 
 	var command client.InteractionCommand

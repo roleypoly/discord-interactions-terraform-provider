@@ -5,6 +5,7 @@ import (
 	"os"
 	"testing"
 
+	petname "github.com/dustinkirkland/golang-petname"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/roleypoly/terraform-provider-discord-interactions/internal/client"
 )
@@ -60,4 +61,9 @@ func getClient() *client.InteractionsClient {
 	}
 
 	return c
+}
+
+func getName() string {
+	petname.NonDeterministicMode()
+	return petname.Name()
 }
