@@ -64,11 +64,10 @@ jobs:
         env:
           TF_ACC: "1"
           TF_ACC_TERRAFORM_VERSION: ${{ matrix.terraform }}
-
-          # Set whatever additional acceptance test env vars here. You can
-          # optionally use data from your repository secrets using the
-          # following syntax:
-          # SOME_VAR: ${{ secrets.SOME_VAR }}
+          DISCORD_BOT_TOKEN: ${{ secrets.TFACC_BOT_TOKEN }}
+          DISCORD_APPLICATION_ID: ${{ secrets.TFACC_APP_ID }}
+          TEST_GUILD_ID: ${{ secrets.TFACC_GUILD_ID }}
 
         run: |
-          go test -v -cover ./internal/provider/
+          make testacc
+          make sweep

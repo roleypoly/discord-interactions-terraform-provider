@@ -6,7 +6,7 @@ import (
 	"io/ioutil"
 )
 
-func (i *InteractionsClient) GetInteractionCommands(guildID string) (*[]InteractionCommand, error) {
+func (i *InteractionsClient) GetInteractionCommands(guildID string) ([]*InteractionCommand, error) {
 	url := `/commands`
 	if guildID != "" {
 		url = `/guilds/` + guildID + url
@@ -17,14 +17,19 @@ func (i *InteractionsClient) GetInteractionCommands(guildID string) (*[]Interact
 		return nil, fmt.Errorf("GET call to %s failed, %w", url, err)
 	}
 
+	body, err := ioutil.ReadAll(response.Body)
+	if err != nil {
+		return nil, fmt.Errorf("response body unavilable, %w", err)
+	}
+
 	if response.StatusCode != 200 {
 		return nil, i.ErrFromResponse(response)
 	}
 
-	commands := &[]InteractionCommand{}
-	err = json.NewDecoder(response.Request.Body).Decode(commands)
+	commands := []*InteractionCommand{}
+	err = json.Unmarshal(body, &commands)
 	if err != nil {
-		return nil, fmt.Errorf("JSON parse issue for %s: %v, %w", url, i.ErrFromResponse(response), err)
+		return nil, fmt.Errorf("JSON parse issue for %s: %w", url, i.ErrFromResponse(response))
 	}
 	return commands, nil
 }
@@ -78,10 +83,6 @@ func (i *InteractionsClient) UpsertInteractionCommand(guildID string, command *I
 
 	if response.StatusCode != 201 && response.StatusCode != 200 {
 		return nil, i.ErrFromResponse(response, body)
-	}
-
-	if response.StatusCode == 201 {
-		return nil, nil
 	}
 
 	commandResponse := &InteractionCommand{}

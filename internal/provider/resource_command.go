@@ -131,8 +131,6 @@ func resourceGuildCommand() *schema.Resource {
 }
 
 func resourceCommandCreate(ctx context.Context, resource *schema.ResourceData, m interface{}) diag.Diagnostics {
-	var diags diag.Diagnostics
-
 	c := m.(*client.InteractionsClient)
 	guildID, _ := resource.Get("guild_id").(string)
 
@@ -150,7 +148,7 @@ func resourceCommandCreate(ctx context.Context, resource *schema.ResourceData, m
 
 	resource.SetId(command.ID)
 
-	return diags
+	return resourceCommandRead(ctx, resource, m)
 }
 
 func resourceCommandRead(ctx context.Context, resource *schema.ResourceData, m interface{}) diag.Diagnostics {
