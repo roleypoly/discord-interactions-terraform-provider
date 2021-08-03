@@ -17,7 +17,7 @@ jobs:
       - name: Set up Go
         uses: actions/setup-go@v2.1.3
         with:
-          go-version: "1.15"
+          go-version: "1.16"
         id: go
 
       - name: Check out code into the Go module directory
@@ -70,4 +70,9 @@ jobs:
 
         run: |
           make testacc
-          make sweep
+
+      - name: Sweep
+        env:
+          DISCORD_BOT_TOKEN: ${{ secrets.TFACC_BOT_TOKEN }}
+          DISCORD_APPLICATION_ID: ${{ secrets.TFACC_APP_ID }}
+          TEST_GUILD_ID: ${{ secrets.TFACC_GUILD_ID }}
